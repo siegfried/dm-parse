@@ -15,10 +15,10 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "dm-parse"
-  gem.homepage = "http://github.com/siegfried/dm-parse"
+  gem.homepage = "https://github.com/siegfried/dm-parse"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{An extension to make DataMapper working on Parse.com}
+  gem.description = %Q{An extension to make DataMapper working on Parse.com}
   gem.email = "zhiqiang.lei@gmail.com"
   gem.authors = ["Zhi-Qiang Lei"]
   # dependencies defined in Gemfile
