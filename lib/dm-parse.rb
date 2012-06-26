@@ -1,0 +1,7 @@
+require "dm-core"
+require "active_support/all"
+require "nestful"
+require "property/parse_key"
+require "parse/resource"
+require "adapters/parse_adapter"
+require "is/parse"

@@ -14,3 +14,7 @@ group :development do
   gem "simplecov", ">= 0.6"
   gem "debugger", ">= 1.1"
 end
+
+gem "dm-core", ">= 1.2"
+gem "activesupport", ">= 3.2"
+gem "nestful", ">= 0.0.8"
