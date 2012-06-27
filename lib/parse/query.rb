@@ -63,7 +63,7 @@ module DataMapper
         end
       end
 
-      class Query
+      class And
         def initialize
           @conditions = Mash.new
         end

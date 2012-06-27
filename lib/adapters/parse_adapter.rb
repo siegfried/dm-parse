@@ -103,10 +103,10 @@ module DataMapper
 
         case conditions
         when NotOperation
-          parse_query = Parse::Conditions::Query.new
+          parse_query = Parse::Conditions::And.new
           feed_reversely(parse_query, conditions)
         when AndOperation
-          parse_query = Parse::Conditions::Query.new
+          parse_query = Parse::Conditions::And.new
           feed_directly(parse_query, conditions)
         when OrOperation
           parse_query = Parse::Conditions::Or.new
@@ -147,7 +147,7 @@ module DataMapper
 
       def feed_or(queries, conditions)
         conditions.each do |condition|
-          parse_query = Parse::Conditions::Query.new
+          parse_query = Parse::Conditions::And.new
           feed_with_condition parse_query, condition
           queries.add parse_query
         end
