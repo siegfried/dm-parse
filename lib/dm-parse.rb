@@ -1,6 +1,7 @@
 require "dm-core"
 require "active_support/all"
 require "nestful"
+require "collection"
 require "property/parse_key"
 require "property/parse_pointer"
 require "property/parse_date"

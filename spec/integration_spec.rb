@@ -42,12 +42,14 @@ describe "collection" do
       resource.comments.create body: "AA"
     end
 
-    its(:size) { should eq(1) }
+    its(:size)  { should eq(1) }
+    its(:count) { should eq(1) }
   end
 
   context "when resource out of scope is saved" do
     before { model.create rank: 4 }
 
     its(:size) { should eq(0) }
+    its(:count) { should eq(0) }
   end
 end

@@ -44,6 +44,25 @@ module DataMapper
         response["results"]
       end
 
+      # Read the "count" from Parse
+      # This is Parse-only
+      #
+      # @param [Query] query
+      #   the query to match resources in the datastore
+      #
+      # @return [Integer]
+      #   the number of records that match the query
+      #
+      # @api semipublic
+      def read_count(query)
+        model     = query.model
+        params    = parse_params_for(query)
+        params[:count] = 1
+        params[:limit] = 0
+        response  = parse_resources_for(model).get params: params
+        response["count"]
+      end
+
       def delete(resources)
         resources.each do |resource|
           parse_resource_for(resource).delete
