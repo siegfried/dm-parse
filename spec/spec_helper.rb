@@ -23,8 +23,7 @@ class Article
   property :title,      String
   property :body,       Text
   property :rank,       Integer
-  property :created_at, DateTime, field: "createdAt"
-  property :updated_at, DateTime, field: "updatedAt"
+  property :closed_at,  ParseDate
 
   has n, :comments
 end
@@ -35,7 +34,6 @@ class Comment
   is :parse
 
   property :body,       Text
-  property :created_at, DateTime, field: "createdAt"
 
   belongs_to :article
 end

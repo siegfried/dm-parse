@@ -29,7 +29,7 @@ describe "collection" do
   subject { collection }
 
   let(:model)       { Article }
-  let(:collection)  { model.all(:rank.gte => 5, :comments => { :body => /aa/im }) }
+  let(:collection)  { model.all(:rank.gte => 5, :closed_at.gt => 1.day.from_now, :closed_at.lt => 3.days.from_now, :comments => { :body => /aa/im }) }
 
   before { model.all.destroy }
   before { Comment.all.destroy }
@@ -38,7 +38,7 @@ describe "collection" do
 
   context "when resource in scope is saved" do
     before do
-      resource  = model.create! rank: 5
+      resource  = model.create! rank: 5, closed_at: 2.day.from_now
       resource.comments.create body: "AA"
     end
 
