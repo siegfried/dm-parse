@@ -20,7 +20,8 @@ module DataMapper
       end
 
       def parse_resources_for(model)
-        model.storage_name == "_User" ? users : classes[model.storage_name]
+        storage_name = model.storage_name
+        storage_name == "_User" ? users : classes[storage_name]
       end
 
       def parse_resource_for(resource)
