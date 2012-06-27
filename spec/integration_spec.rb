@@ -29,14 +29,18 @@ describe "collection" do
   subject { collection }
 
   let(:model)       { Article }
-  let(:collection)  { model.all(:rank.gte => 5) }
+  let(:collection)  { model.all(:rank.gte => 5, :comments => { :body => /aa/im }) }
 
   before { model.all.destroy }
+  before { Comment.all.destroy }
 
   its(:size) { should eq(0) }
 
   context "when resource in scope is saved" do
-    before { model.create rank: 5 }
+    before do
+      resource = model.create! rank: 5
+      resource.comments.create body: "AA"
+    end
 
     its(:size) { should eq(1) }
   end

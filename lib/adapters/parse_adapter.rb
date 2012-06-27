@@ -132,7 +132,7 @@ module DataMapper
           when LessThanOrEqualToComparison    then feed_for(parse_query, condition, Gt)
           when NotOperation                   then feed_directly(parse_query, condition)
           when AndOperation                   then feed_reversely(parse_query, condition)
-          when InclusionComparison            then feed_for(parse_query, condition, Nin)
+          when InclusionComparison            then feed_inclusion(parse_query, condition, Nin)
           else
             raise NotImplementedError
           end
@@ -163,9 +163,18 @@ module DataMapper
         when LessThanOrEqualToComparison    then feed_for(parse_query, condition, Lte)
         when NotOperation                   then feed_reversely(parse_query, condition)
         when AndOperation                   then feed_directly(parse_query, condition)
-        when InclusionComparison            then feed_for(parse_query, condition, In)
+        when InclusionComparison            then feed_inclusion(parse_query, condition, In)
         else
           raise NotImplementedError
+        end
+      end
+
+      def feed_inclusion(parse_query, condition, comparison_class)
+        if condition.subject.is_a?(DataMapper::Associations::OneToMany::Relationship)
+          child_key = condition.subject.child_key.first.name
+          parse_query.add "objectId", comparison_class.new(condition.value.map { |resource| resource.send child_key })
+        else
+          feed_for(parse_query, condition, comparison_class)
         end
       end
 
