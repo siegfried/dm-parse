@@ -73,22 +73,22 @@ describe DataMapper::Adapters::ParseAdapter do
       it { should eq("rank" => 5, "body" => "x") }
     end
 
+    context "when query has complex :not operation" do
+      let(:query) { (model.all - model.all(:rank => 5, :body => "x")).query }
+      it { should eq("rank" => {"$ne" => 5}, "body" => {"$ne" => "x"}) }
+
+      context "when condition is not EqualToComparison" do
+        let(:query) { model.all(:rank.not => [2, 3]).query }
+        it { should eq("rank" => {"$nin" => [2, 3]}) }
+      end
+    end
+
     describe "exceptions" do
       subject { -> { adapter.send :parse_conditions_for, query } }
 
       context "when the key is same" do
         let(:query) { (model.all("rank" => 5) & model.all("rank" => 3)).query }
         it { should raise_error("can only use one EqualToComparison for a field") }
-      end
-
-      context "when query has complex :not operation" do
-        let(:query) { (model.all - model.all(:rank => 5, :body => "x")).query }
-        it { should raise_error("Parse does not support complex NOT operation") }
-
-        context "when condition is not EqualToComparison" do
-          let(:query) { model.all(:rank.not => [2, 3]).query }
-          it { should raise_error("Parse does not support complex NOT operation") }
-        end
       end
 
       context "when query has :eql and others of one field" do
@@ -189,25 +189,6 @@ describe DataMapper::Adapters::ParseAdapter do
       it { should eq(:limit => 1000, :order => "-rank") }
     end
   end # #parse_params_for
-
-  describe "#regex_options" do
-    subject { adapter.send :regex_options, regex }
-
-    context "when case insensitive option is on" do
-      let(:regex) { /bbq/i }
-      it { should eq("i") }
-    end
-
-    context "when multiline option is on" do
-      let(:regex) { /bbq/m }
-      it { should eq("m") }
-    end
-
-    context "when both case insensitive and multiline option is on" do
-      let(:regex) { /bbq/mi }
-      it { should eq("im") }
-    end
-  end # #regex_options
 
   shared_examples_for DataMapper::Parse::Resource do
     let(:options) { { adapter: :parse, app_id: app_id, api_key: api_key} }

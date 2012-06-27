@@ -2,6 +2,9 @@ module DataMapper
   module Adapters
 
     class ParseAdapter < AbstractAdapter
+      include Parse::Conditions
+      include Query::Conditions
+
       HOST              = "https://api.parse.com"
       VERSION           = "1"
       APP_ID_HEADER     = "X-Parse-Application-Id"
@@ -95,84 +98,77 @@ module DataMapper
       end
 
       def parse_conditions_for(query)
-        conditions = query.conditions
+        conditions  = query.conditions
         return nil if conditions.blank?
-        convert(conditions)
-      end
 
-      def convert(conditions)
-        # Option "$ne" of Parse can be presented by
-        # a single EqualToComparison under a NotOperation
-        if conditions.slug == :not && conditions.first.slug != :eql
-          raise "Parse does not support complex NOT operation"
-        elsif conditions.slug == :or
-          {"$or" => conditions.map { |condition| convert(condition) }}
-        elsif conditions.slug == :and
-          conditions.group_by { |condition| condition_field_for(condition) }.inject({}) do |result, (field, conditions)|
-            result.merge(field => conditions_value_for(conditions))
-          end
-        elsif conditions.is_a?(Query::Conditions::AbstractComparison)
-          {conditions.subject.field => condition_value_for(conditions)}
-        end
-      end
-
-      def regex_options(regex)
-        options = regex.options
-        result = []
-        result << "i" if options[0] == 1
-        result << "m" if options[2] == 1
-        result.join
-      end
-
-      def condition_field_for(condition)
-        if condition.slug == :not
-          condition.first.subject.field
-        else
-          condition.subject.field
-        end
-      end
-
-      def condition_value_for(condition)
-        slug = condition.slug
-
-        if slug == :eql
-          condition.value
-        elsif [:gt, :gte, :lt, :lte].include?(slug)
-          {"$#{slug}" => condition.value}
-        elsif slug == :in
-          {"$#{slug}" => condition.value.to_a}
-        elsif slug == :regexp
-          regex   = condition.value
-          options = regex_options(regex)
-          {"$regex" => regex.source}.tap { |v| v["$options"] = options if options.present? }
-        elsif slug == :not
-          first_condition = condition.first
-          raise "Parse does not support complex NOT operation" unless first_condition.slug == :eql
-          {"$ne" => first_condition.value}
-        end
-      end
-
-      def conditions_value_for(conditions)
-        groups = conditions.group_by { |condition| condition.slug == :eql }
-        equal_conditions = groups[true]
-        other_conditions = groups[false]
-
-        if equal_conditions.present? && other_conditions.present?
-          raise "cannot combine EqualToComparison with others for a field in Parse"
+        case conditions
+        when NotOperation
+          parse_query = Parse::Conditions::Query.new
+          feed_reversely(parse_query, conditions)
+        when AndOperation
+          parse_query = Parse::Conditions::Query.new
+          feed_directly(parse_query, conditions)
+        when OrOperation
+          parse_query = Parse::Conditions::Or.new
+          feed_or(parse_query, conditions)
         end
 
-        if equal_conditions.present? && equal_conditions.size > 1
-          raise "can only use one EqualToComparison for a field"
-        end
+        parse_query.build
+      end
 
-        if equal_conditions.present?
-          equal_conditions.first.value
-        else
-          other_conditions.inject({}) do |result, condition|
-            result.merge condition_value_for(condition)
+      def feed_for(parse_query, condition, comparison_class)
+        field       = condition.subject.field
+        comparison  = comparison_class.new condition.value
+        parse_query.add field, comparison
+      end
+
+      def feed_reversely(parse_query, conditions)
+        conditions.each do |condition|
+          case condition
+          when EqualToComparison              then feed_for(parse_query, condition, Ne)
+          when GreaterThanComparison          then feed_for(parse_query, condition, Lte)
+          when GreaterThanOrEqualToComparison then feed_for(parse_query, condition, Lt)
+          when LessThanComparison             then feed_for(parse_query, condition, Gte)
+          when LessThanOrEqualToComparison    then feed_for(parse_query, condition, Gt)
+          when NotOperation                   then feed_directly(parse_query, condition)
+          when AndOperation                   then feed_reversely(parse_query, condition)
+          when InclusionComparison            then feed_for(parse_query, condition, Nin)
+          else
+            raise NotImplementedError
           end
         end
       end
+
+      def feed_directly(parse_query, conditions)
+        conditions.each do |condition|
+          feed_with_condition parse_query, condition
+        end
+      end
+
+      def feed_or(queries, conditions)
+        conditions.each do |condition|
+          parse_query = Parse::Conditions::Query.new
+          feed_with_condition parse_query, condition
+          queries.add parse_query
+        end
+      end
+
+      def feed_with_condition(parse_query, condition)
+        case condition
+        when RegexpComparison               then feed_for(parse_query, condition, Regex)
+        when EqualToComparison              then feed_for(parse_query, condition, Eql)
+        when GreaterThanComparison          then feed_for(parse_query, condition, Gt)
+        when GreaterThanOrEqualToComparison then feed_for(parse_query, condition, Gte)
+        when LessThanComparison             then feed_for(parse_query, condition, Lt)
+        when LessThanOrEqualToComparison    then feed_for(parse_query, condition, Lte)
+        when NotOperation                   then feed_reversely(parse_query, condition)
+        when AndOperation                   then feed_directly(parse_query, condition)
+        when InclusionComparison            then feed_for(parse_query, condition, In)
+        else
+          raise NotImplementedError
+        end
+      end
+
     end
 
     const_added(:ParseAdapter)
