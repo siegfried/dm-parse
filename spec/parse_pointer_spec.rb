@@ -1,11 +1,11 @@
 require "spec_helper"
 
 describe DataMapper::Property::ParsePointer do
-  subject { pointer }
-  let(:pointer) { Comment.properties[:article_id] }
+  subject { property }
+  let(:property) { Comment.properties[:article_id] }
 
   describe "#dump" do
-    subject { pointer.dump value }
+    subject { property.dump value }
     let(:value) { "xxx" }
 
     it { should eq("__type" => "Pointer", "className" => Article.storage_name, "objectId" => "xxx") }
@@ -18,14 +18,14 @@ describe DataMapper::Property::ParsePointer do
   end
 
   describe "#load" do
-    subject { pointer.load value }
+    subject { property.load value }
     let(:value) { {"__type" => "Pointer", "className" => Article.storage_name, "objectId" => "xxx"} }
 
     it { should eq("xxx") }
   end
 
   describe "#valid?" do
-    subject { pointer.valid? "xxx" }
+    subject { property.valid? "xxx" }
 
     it { should be_true }
   end

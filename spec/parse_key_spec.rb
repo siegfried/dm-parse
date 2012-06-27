@@ -1,11 +1,11 @@
 require "spec_helper"
 
 describe DataMapper::Property::ParseKey do
-  subject { key }
-  let(:key) { Article.properties[:id] }
+  subject { property }
+  let(:property) { Article.properties[:id] }
 
   describe "#dump" do
-    subject { key.dump value }
+    subject { property.dump value }
     let(:value) { "xxx" }
 
     it { should eq("xxx") }
@@ -18,14 +18,14 @@ describe DataMapper::Property::ParseKey do
   end
 
   describe "#load" do
-    subject { key.load value }
+    subject { property.load value }
     let(:value) { "xxx" }
 
     it { should eq("xxx") }
   end
 
   describe "#valid?" do
-    subject { key.valid? "xxx" }
+    subject { property.valid? "xxx" }
 
     it { should be_true }
   end
