@@ -94,7 +94,7 @@ module DataMapper
 
       def parse_limit_for(query)
         limit = query.limit || 1000
-        raise "Parse limit: only number from 1 to 1000 is valid" unless (1..1000).include?(limit)
+        raise "Parse limit: only number from 0 to 1000 is valid" unless (0..1000).include?(limit)
         limit 
       end
 

@@ -114,22 +114,17 @@ describe DataMapper::Adapters::ParseAdapter do
     let(:query) { model.all.query }
     it { should eq(1000) }
 
-    context "when 1 is given" do
-      let(:query) { model.all(:limit => 1).query }
-      it { should eq(1) }
+    context "when 0 is given" do
+      let(:query) { model.all(:limit => 0).query }
+      it { should eq(0) }
     end
 
     describe "exceptions" do
       subject { -> { adapter.send :parse_limit_for, query } }
 
-      context "when 0 is given" do
-        let(:query) { model.all(:limit => 0).query }
-        it { should raise_error("Parse limit: only number from 1 to 1000 is valid") }
-      end
-
       context "when 1001 is given" do
         let(:query) { model.all(:limit => 1001).query }
-        it { should raise_error("Parse limit: only number from 1 to 1000 is valid") }
+        it { should raise_error("Parse limit: only number from 0 to 1000 is valid") }
       end
     end
   end # #parse_limit_for
