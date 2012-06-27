@@ -38,7 +38,7 @@ describe "collection" do
 
   context "when resource in scope is saved" do
     before do
-      resource = model.create! rank: 5
+      resource  = model.create! rank: 5
       resource.comments.create body: "AA"
     end
 
