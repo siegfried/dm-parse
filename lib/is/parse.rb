@@ -15,11 +15,16 @@ module DataMapper
 
         property :username, Property::String
         property :password, Property::String
+        property :email,    Property::String
 
         class << self
           def authenticate(username, password)
             result = repository.adapter.sign_in(username, password)
             get(result["objectId"])
+          end
+
+          def request_password_reset(email)
+            repository.adapter.request_password_reset email
           end
         end
       end

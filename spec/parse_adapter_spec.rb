@@ -215,6 +215,12 @@ describe DataMapper::Adapters::ParseAdapter do
     it_should_behave_like DataMapper::Parse::Resource
   end
 
+  describe "#password_reset" do
+    subject { adapter.password_reset }
+    its(:url) { should eq("https://api.parse.com/1/requestPasswordReset") }
+    it_should_behave_like DataMapper::Parse::Resource
+  end
+
   describe "#parse_resources_for" do
     subject { adapter.parse_resources_for model }
     it { should eq(adapter.classes[model.storage_name]) }

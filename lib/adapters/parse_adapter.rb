@@ -11,13 +11,14 @@ module DataMapper
       API_KEY_HEADER    = "X-Parse-REST-API-Key"
       MASTER_KEY_HEADER = "X-Parse-Master-Key"
 
-      attr_reader :classes, :users, :login
+      attr_reader :classes, :users, :login, :password_reset
 
       def initialize(name, options)
         super
-        @classes  = build_parse_resource_for "classes"
-        @users    = build_parse_resource_for "users"
-        @login    = build_parse_resource_for "login"
+        @classes        = build_parse_resource_for "classes"
+        @users          = build_parse_resource_for "users"
+        @login          = build_parse_resource_for "login"
+        @password_reset = build_parse_resource_for "requestPasswordReset"
       end
 
       def parse_resources_for(model)
@@ -77,6 +78,18 @@ module DataMapper
       # @api semipublic
       def sign_in(username, password)
         login.get params: {username: username, password: password}
+      end
+
+      # Request a password reset email
+      # Parse-only
+      #
+      # @param [String] email
+      #   the email address
+      #
+      # @return [Hash]
+      #   a empty Hash
+      def request_password_reset(email)
+        password_reset.post params: {email: email}
       end
 
       def delete(resources)
