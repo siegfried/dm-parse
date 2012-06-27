@@ -53,3 +53,26 @@ describe "collection" do
     its(:count) { should eq(0) }
   end
 end
+
+describe User do
+  subject { model }
+
+  before do
+    repository :master do
+      model.all.destroy
+    end
+  end
+
+  let(:user)      { described_class.create! username: username, password: password }
+  let(:model)     { described_class }
+  let(:username)  { "testuser0" }
+  let(:password)  { "abcdefgh" }
+
+  its(:storage_name) { should eq("_User") }
+
+  describe "#authenticate" do
+    subject { model.authenticate username, password }
+
+    it { should eq(user) }
+  end
+end

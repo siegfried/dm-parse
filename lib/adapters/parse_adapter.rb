@@ -11,12 +11,13 @@ module DataMapper
       API_KEY_HEADER    = "X-Parse-REST-API-Key"
       MASTER_KEY_HEADER = "X-Parse-Master-Key"
 
-      attr_reader :classes, :users
+      attr_reader :classes, :users, :login
 
       def initialize(name, options)
         super
         @classes  = build_parse_resource_for "classes"
         @users    = build_parse_resource_for "users"
+        @login    = build_parse_resource_for "login"
       end
 
       def parse_resources_for(model)
@@ -63,6 +64,21 @@ module DataMapper
         response["count"]
       end
 
+      # Login, which is Parse-only
+      #
+      # @param [String] username
+      #   the username
+      # @param [String] password
+      #   the password
+      #
+      # @return [Hash]
+      #   the user information
+      #
+      # @api semipublic
+      def sign_in(username, password)
+        login.get params: {username: username, password: password}
+      end
+
       def delete(resources)
         resources.each do |resource|
           parse_resource_for(resource).delete
@@ -98,8 +114,11 @@ module DataMapper
       end
 
       def parse_orders_for(query)
+        orders = query.order
+        return nil unless orders
+
         # cannot use objectId as order field on Parse
-        orders = query.order.reject { |order| order.target.field == "objectId" }.map do |order|
+        orders = orders.reject { |order| order.target.field == "objectId" }.map do |order|
           field = order.target.field
           order.operator == :desc ? "-" + field : field
         end.join(",")
