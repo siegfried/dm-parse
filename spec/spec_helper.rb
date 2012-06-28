@@ -29,6 +29,7 @@ class User
 
   is :parse_user
   storage_names[:master] = "_User"
+  property :location, ParseGeoPoint
 end
 
 class Article
