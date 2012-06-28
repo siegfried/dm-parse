@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dm-parse"
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Zhi-Qiang Lei"]
@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.email = "zhiqiang.lei@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE.txt",
+    "README.md",
     "README.rdoc"
   ]
   s.files = [
@@ -22,9 +23,11 @@ Gem::Specification.new do |s|
     "Gemfile",
     "Gemfile.lock",
     "LICENSE.txt",
+    "README.md",
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "dm-parse.gemspec",
     "lib/adapters/parse_adapter.rb",
     "lib/collection.rb",
     "lib/dm-parse.rb",
@@ -32,11 +35,15 @@ Gem::Specification.new do |s|
     "lib/parse/query.rb",
     "lib/parse/resource.rb",
     "lib/property/parse_date.rb",
+    "lib/property/parse_file.rb",
+    "lib/property/parse_geo_point.rb",
     "lib/property/parse_key.rb",
     "lib/property/parse_pointer.rb",
     "spec/integration_spec.rb",
     "spec/parse_adapter_spec.rb",
     "spec/parse_date_spec.rb",
+    "spec/parse_file_spec.rb",
+    "spec/parse_geo_point_spec.rb",
     "spec/parse_key_spec.rb",
     "spec/parse_pointer_spec.rb",
     "spec/query_spec.rb",
@@ -64,10 +71,6 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<jeweler>, [">= 1.8.3"])
       s.add_development_dependency(%q<simplecov>, [">= 0.6"])
       s.add_development_dependency(%q<debugger>, [">= 1.1"])
-      s.add_runtime_dependency(%q<dm-core>, [">= 1.2"])
-      s.add_runtime_dependency(%q<dm-validations>, [">= 1.2"])
-      s.add_runtime_dependency(%q<activesupport>, [">= 3.2"])
-      s.add_runtime_dependency(%q<nestful>, [">= 0.0.8"])
     else
       s.add_dependency(%q<dm-core>, [">= 1.2"])
       s.add_dependency(%q<dm-validations>, [">= 1.2"])
@@ -80,10 +83,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<jeweler>, [">= 1.8.3"])
       s.add_dependency(%q<simplecov>, [">= 0.6"])
       s.add_dependency(%q<debugger>, [">= 1.1"])
-      s.add_dependency(%q<dm-core>, [">= 1.2"])
-      s.add_dependency(%q<dm-validations>, [">= 1.2"])
-      s.add_dependency(%q<activesupport>, [">= 3.2"])
-      s.add_dependency(%q<nestful>, [">= 0.0.8"])
     end
   else
     s.add_dependency(%q<dm-core>, [">= 1.2"])
@@ -97,10 +96,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<jeweler>, [">= 1.8.3"])
     s.add_dependency(%q<simplecov>, [">= 0.6"])
     s.add_dependency(%q<debugger>, [">= 1.1"])
-    s.add_dependency(%q<dm-core>, [">= 1.2"])
-    s.add_dependency(%q<dm-validations>, [">= 1.2"])
-    s.add_dependency(%q<activesupport>, [">= 3.2"])
-    s.add_dependency(%q<nestful>, [">= 0.0.8"])
   end
 end
 
