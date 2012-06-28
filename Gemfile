@@ -16,5 +16,6 @@ group :development do
 end
 
 gem "dm-core", ">= 1.2"
+gem "dm-validations", ">= 1.2"
 gem "activesupport", ">= 3.2"
 gem "nestful", ">= 0.0.8"

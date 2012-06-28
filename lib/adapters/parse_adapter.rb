@@ -36,6 +36,7 @@ module DataMapper
           model   = resource.model
           result  = parse_resources_for(model).post params: params
           initialize_serial resource, result["objectId"]
+          resource.created_at = resource.updated_at = result["createdAt"]
         end.size
       end
 

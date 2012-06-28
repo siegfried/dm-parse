@@ -15,7 +15,7 @@ module DataMapper
 
         property :username, Property::String
         property :password, Property::String
-        property :email,    Property::String
+        property :email,    Property::String, format: :email_address
 
         class << self
           def authenticate(username, password)

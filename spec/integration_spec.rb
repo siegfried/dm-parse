@@ -55,7 +55,7 @@ describe "collection" do
 end
 
 describe User do
-  subject { model }
+  subject { user }
 
   before do
     repository :master do
@@ -63,16 +63,36 @@ describe User do
     end
   end
 
-  let(:user)      { described_class.create! username: username, password: password }
   let(:model)     { described_class }
   let(:username)  { "testuser0" }
   let(:password)  { "abcdefgh" }
+  let(:user)      { model.new username: username, password: password }
 
-  its(:storage_name) { should eq("_User") }
+  it { should be_valid }
 
-  describe "#authenticate" do
-    subject { model.authenticate username, password }
+  context "when a vaid email is given" do
+    let(:user) { model.new username: username, password: password, email: "#{username}@abc.com" }
 
-    it { should eq(user) }
+    it { should be_valid }
+  end
+
+  context "when an invalid email is given" do
+    let(:user) { model.new username: username, password: password, email: "dafdjlfdsaj" }
+
+    it { should_not be_valid }
+  end
+
+  describe "class" do
+    subject { model }
+
+    let(:user) { model.create! username: username, password: password }
+
+    its(:storage_name) { should eq("_User") }
+
+    describe "#authenticate" do
+      subject { model.authenticate username, password }
+
+      it { should eq(user) }
+    end
   end
 end
