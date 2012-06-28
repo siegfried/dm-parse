@@ -64,7 +64,7 @@ class User
   include DataMapper::Resource
 
   # more than :parse, it also defines username, password and email.
-  # it also set the default storage_names to "_User"
+  # it also sets the default storage_names to "_User"
   is :parse_user
   storage_names[:master] = "_User"
 end
