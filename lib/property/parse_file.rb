@@ -8,7 +8,7 @@ module DataMapper
       end
 
       def load(value)
-        value && (value.is_a?(Hash) ? value["name"].to_s : value.to_s)
+        value && value["name"].to_s
       end
 
     end
