@@ -72,6 +72,12 @@ end
 
 By this, you can use `User.authenticate(username, password)` to sign in, and use `User.request_password_reset(email)` to reset password.
 
+## Special properties for Parse
+* ParseKey: the property for objectId, `is :parse` will define it for you.
+* ParsePointer: the pointer, you just need to give it objectId value.
+* ParseDate: the date, use it like you use DateTime.
+* ParseFile: the file, just give it file url.
+
 ## Contributing to dm-parse
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
