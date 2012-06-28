@@ -1,3 +1,5 @@
+spec/parse_env.yml
+
 # rcov generated
 coverage
 coverage.data

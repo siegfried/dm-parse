@@ -11,9 +11,15 @@ RSpec.configure do |config|
   
 end
 
-app_id      = "ydJFDnkvq78QxiKfSt7HR52pD2Ax8mixJ7bE948o"
-api_key     = "WDl0xpJYXtfwMnknOuv4CnZ1wTrBXQiDdOIaioJQ"
-master_key  = "Rjx96vifgcSvyFCapWD48SQl0D4Lm09t7UFoToCp"
+# To run the tests, setup a Parse environment in "parse_env.yml"
+# under the same directory, which I don't provide.
+env_file    = File.join(File.dirname(__FILE__), "parse_env.yml")
+settings    = YAML::load(File.read env_file)
+app_id      = settings["app_id"]
+api_key     = settings["api_key"]
+master_key  = settings["master_key"]
+
+raise "You must setup a parse environment before testing" unless app_id && api_key && master_key
 
 DataMapper.setup :default,  adapter: :parse, app_id: app_id, api_key: api_key
 DataMapper.setup :master,   adapter: :parse, app_id: app_id, api_key: master_key, master: true
