@@ -22,10 +22,6 @@ Jeweler::Tasks.new do |gem|
   gem.email = "zhiqiang.lei@gmail.com"
   gem.authors = ["Zhi-Qiang Lei"]
   # dependencies defined in Gemfile
-  gem.add_dependency "dm-core", ">= 1.2"
-  gem.add_dependency "dm-validations", ">= 1.2"
-  gem.add_dependency "activesupport", ">= 3.2"
-  gem.add_dependency "nestful", ">= 0.0.8"
 end
 Jeweler::RubygemsDotOrgTasks.new
 
