@@ -76,7 +76,7 @@ By this, you can use `User.authenticate(username, password)` to sign in, and use
 * ParseKey: the property for objectId, `is :parse` will define it for you.
 * ParsePointer: the pointer, you just need to give it objectId value.
 * ParseDate: the date, use it like you use DateTime.
-* ParseFile: the file, just give it file url.
+* ParseFile: the file, give it a hash contain "name" and "url", or a IO object from web form, it will be uploaded.
 
 ## Contributing to dm-parse
  

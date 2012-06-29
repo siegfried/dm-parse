@@ -221,6 +221,12 @@ describe DataMapper::Adapters::ParseAdapter do
     it_should_behave_like DataMapper::Parse::Resource
   end
 
+  describe "#file_storage" do
+    subject { adapter.file_storage }
+    its(:url) { should eq("https://api.parse.com/1/files") }
+    it_should_behave_like DataMapper::Parse::Resource
+  end
+
   describe "#parse_resources_for" do
     subject { adapter.parse_resources_for model }
     it { should eq(adapter.classes[model.storage_name]) }

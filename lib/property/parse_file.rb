@@ -4,11 +4,20 @@ module DataMapper
     class ParseFile < Object
 
       def dump(value)
-        value && {"__type" => "File", "name" => value.to_s}
+        if value.is_a?(Hash)
+          value.merge("__type" => "File")
+        elsif value.respond_to?(:original_filename) && value.respond_to?(:read)
+          adapter   = model.repository.adapter
+          filename  = value.original_filename
+          content   = value.read
+          adapter.upload_file(filename, content).merge("__type" => "File")
+        else
+          nil
+        end
       end
 
       def load(value)
-        value && value["name"].to_s
+        value
       end
 
     end

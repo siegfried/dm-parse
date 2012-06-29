@@ -11,7 +11,7 @@ module DataMapper
       API_KEY_HEADER    = "X-Parse-REST-API-Key"
       MASTER_KEY_HEADER = "X-Parse-Master-Key"
 
-      attr_reader :classes, :users, :login, :password_reset
+      attr_reader :classes, :users, :login, :password_reset, :file_storage
 
       def initialize(name, options)
         super
@@ -19,6 +19,7 @@ module DataMapper
         @users          = build_parse_resource_for "users"
         @login          = build_parse_resource_for "login"
         @password_reset = build_parse_resource_for "requestPasswordReset"
+        @file_storage   = build_parse_resource_for "files"
       end
 
       def parse_resources_for(model)
@@ -91,6 +92,26 @@ module DataMapper
       #   a empty Hash
       def request_password_reset(email)
         password_reset.post params: {email: email}
+      end
+
+      # Upload a file
+      # Parse-only
+      #
+      # @param [String] filename
+      #   the filename
+      #
+      # @param [String] content
+      #   the content
+      #
+      # @param [String] content_type
+      #   the content type
+      #
+      # @return [Hash]
+      #   the uploaded file information
+      def upload_file(filename, content, content_type = MIME::Types.type_for(filename).first)
+        headers = file_storage.options[:headers]
+        headers = headers.merge("Content-Type" => content_type) if content_type
+        file_storage[URI.escape(filename)].post body: content, headers: headers
       end
 
       def delete(resources)

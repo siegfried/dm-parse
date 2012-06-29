@@ -96,3 +96,19 @@ describe User do
     end
   end
 end
+
+describe "adapter" do
+  subject { adapter }
+
+  let(:adapter) { DataMapper::Repository.adapters[:default] }
+
+  describe "#upload_file" do
+    subject { adapter.upload_file filename, content }
+
+    let(:filename)  { "xf x.txt" }
+    let(:content)   { "xx" }
+
+    it { should be_has_key("name") }
+    it { should be_has_key("url") }
+  end
+end
