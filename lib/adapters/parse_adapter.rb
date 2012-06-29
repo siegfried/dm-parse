@@ -108,9 +108,15 @@ module DataMapper
 
       private
       def build_parse_resource_for(name)
+        Parse::Resource.new(HOST, format: :json, headers: key_headers)[VERSION][name]
+      end
+
+      def key_headers
         key_type  = @options[:master] ? MASTER_KEY_HEADER : API_KEY_HEADER
-        headers   = {APP_ID_HEADER => @options[:app_id], key_type => @options[:api_key]}
-        Parse::Resource.new(HOST, format: :json, headers: headers)[VERSION][name]
+        {
+          APP_ID_HEADER => @options[:app_id],
+          key_type => @options[:api_key]
+        }
       end
 
       def parse_params_for(query)
