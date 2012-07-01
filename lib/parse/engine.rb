@@ -43,9 +43,9 @@ module DataMapper
       end
 
       def upload_file(filename, content, content_type)
-        headers = file_storage.options[:headers]
-        headers = headers.merge("Content-Type" => content_type)
-        file_storage[URI.escape(filename)].post body: content, headers: headers
+        storage = file_storage[URI.escape(filename)]
+        storage.options[:headers]["Content-Type"] = content_type
+        storage.post body: content
       end
 
       def request_password_reset(email)
