@@ -11,40 +11,32 @@ module DataMapper
       API_KEY_HEADER    = "X-Parse-REST-API-Key"
       MASTER_KEY_HEADER = "X-Parse-Master-Key"
 
-      attr_reader :classes, :users, :login, :password_reset, :file_storage
+      attr_reader :engine
 
       def initialize(name, options)
         super
-        @classes        = build_parse_resource_for "classes"
-        @users          = build_parse_resource_for "users"
-        @login          = build_parse_resource_for "login"
-        @password_reset = build_parse_resource_for "requestPasswordReset"
-        @file_storage   = build_parse_resource_for "files"
-      end
-
-      def parse_resources_for(model)
-        storage_name = model.storage_name
-        storage_name == "_User" ? users : classes[storage_name]
-      end
-
-      def parse_resource_for(resource)
-        parse_resources_for(resource.model)[resource.id]
+        master = @options[:master].nil? ? false : @options[:master]
+        @engine = Parse::Engine.new @options[:app_id], @options[:api_key], master
       end
 
       def create(resources)
         resources.each do |resource|
-          params  = attributes_as_fields(resource.attributes(:property)).except("objectId", "createdAt", "updatedAt")
-          model   = resource.model
-          result  = parse_resources_for(model).post params: params
+          params        = attributes_as_fields(resource.attributes(:property)).except("objectId", "createdAt", "updatedAt")
+          model         = resource.model
+          storage_name  = model.storage_name
+          result        = engine.create storage_name, params
+
           initialize_serial resource, result["objectId"]
           resource.created_at = resource.updated_at = result["createdAt"]
         end.size
       end
 
       def read(query)
-        model     = query.model
-        params    = parse_params_for(query)
-        response  = parse_resources_for(model).get params: params
+        model         = query.model
+        params        = parse_params_for(query)
+        storage_name  = model.storage_name
+        response      = engine.read storage_name, params
+
         response["results"]
       end
 
@@ -59,11 +51,13 @@ module DataMapper
       #
       # @api semipublic
       def read_count(query)
-        model     = query.model
-        params    = parse_params_for(query)
-        params[:count] = 1
-        params[:limit] = 0
-        response  = parse_resources_for(model).get params: params
+        model           = query.model
+        params          = parse_params_for(query)
+        params[:count]  = 1
+        params[:limit]  = 0
+        storage_name    = model.storage_name
+        response        = engine.read storage_name, params
+
         response["count"]
       end
 
@@ -79,7 +73,7 @@ module DataMapper
       #
       # @api semipublic
       def sign_in(username, password)
-        login.get params: {username: username, password: password}
+        engine.sign_in username, password
       end
 
       # Request a password reset email
@@ -91,7 +85,7 @@ module DataMapper
       # @return [Hash]
       #   a empty Hash
       def request_password_reset(email)
-        password_reset.post params: {email: email}
+        engine.request_password_reset email
       end
 
       # Upload a file
@@ -108,38 +102,28 @@ module DataMapper
       #
       # @return [Hash]
       #   the uploaded file information
-      def upload_file(filename, content, content_type = MIME::Types.type_for(filename).first)
-        headers = file_storage.options[:headers]
-        headers = headers.merge("Content-Type" => content_type) if content_type
-        file_storage[URI.escape(filename)].post body: content, headers: headers
+      def upload_file(filename, content, content_type)
+        engine.upload_file filename, content, content_type
       end
 
       def delete(resources)
         resources.each do |resource|
-          parse_resource_for(resource).delete
+          storage_name = resource.model.storage_name
+
+          engine.delete storage_name, resource.id
         end.size
       end
 
       def update(attributes, resources)
         resources.each do |resource|
-          params  = attributes_as_fields(attributes).except("createdAt", "updatedAt")
-          parse_resource_for(resource).put(params: params)
+          params        = attributes_as_fields(attributes).except("createdAt", "updatedAt")
+          storage_name  = resource.model.storage_name
+
+          engine.update storage_name, resource.id, params
         end.size
       end
 
       private
-      def build_parse_resource_for(name)
-        Parse::Resource.new(HOST, format: :json, headers: key_headers)[VERSION][name]
-      end
-
-      def key_headers
-        key_type  = @options[:master] ? MASTER_KEY_HEADER : API_KEY_HEADER
-        {
-          APP_ID_HEADER => @options[:app_id],
-          key_type => @options[:api_key]
-        }
-      end
-
       def parse_params_for(query)
         result = { :limit => parse_limit_for(query) }
         if conditions = parse_conditions_for(query)

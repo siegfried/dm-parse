@@ -22,7 +22,7 @@ describe DataMapper::Property::ParseFile do
       let(:value) { StringIO.new "xx" }
       
       before { value.stub(original_filename: "xx.txt") }
-      before { DataMapper::Parse::Resource.any_instance.stub(post: {"name" => "x", "url" => "y"}) }
+      before { DataMapper::Adapters::ParseAdapter.any_instance.stub(upload_file: {"name" => "x", "url" => "y"}) }
 
       it { should be_has_key("__type") }
       it { should be_has_key("name") }

@@ -103,12 +103,28 @@ describe "adapter" do
   let(:adapter) { DataMapper::Repository.adapters[:default] }
 
   describe "#upload_file" do
-    subject { adapter.upload_file filename, content }
+    subject { adapter.upload_file filename, content, content_type }
 
-    let(:filename)  { "xf x.txt" }
-    let(:content)   { "xx" }
+    let(:filename)      { "xf x.txt" }
+    let(:content)       { "xx" }
+    let(:content_type)  { "plain/txt" }
 
     it { should be_has_key("name") }
     it { should be_has_key("url") }
+  end
+
+  describe "#request_password_reset" do
+    subject { adapter.request_password_reset email }
+
+    before do
+      repository :master do
+        User.all.destroy
+      end
+    end
+
+    let(:email) { user.email }
+    let(:user)  { User.create! username: "a", password: "a", email: "a@abc.cn" }
+
+    it { should eq({}) }
   end
 end
