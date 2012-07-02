@@ -58,6 +58,15 @@ describe "collection" do
     its(:size) { should eq(0) }
     its(:count) { should eq(0) }
   end
+
+  context "when collection are children" do
+    let(:collection)  { parent.comments }
+    let(:parent)      { Article.create }
+    let!(:comment)    { Comment.create article: parent }
+
+    its(:size)  { should eq(1) }
+    its(:first) { should eq(comment) }
+  end
 end
 
 describe User do

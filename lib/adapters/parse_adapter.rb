@@ -189,6 +189,9 @@ module DataMapper
         when DataMapper::Associations::OneToMany::Relationship
           child_key = condition.subject.child_key.first
           parse_query.add "objectId", comparison_class.new(condition.value.map { |resource| resource.send child_key.name })
+        when DataMapper::Associations::ManyToOne::Relationship
+          child_key = subject.child_key.first
+          parse_query.add child_key.field, comparison_class.new(condition.foreign_key_mapping.value)
         else
           raise NotImplementedError, "Condition: #{condition}"
         end
