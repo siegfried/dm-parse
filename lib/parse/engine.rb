@@ -1,73 +1,76 @@
 module DataMapper
+
+  module ::Parse
+    module Protocol
+      HEADER_MASTER_KEY = "X-Parse-Master-Key"
+    end
+
+    class Client
+      def initialize(data = {})
+        @host     = data[:host] || Protocol::HOST
+        @app_id   = data[:app_id]
+        @api_key  = data[:api_key]
+        @session  = Patron::Session.new
+        @session.timeout = 10
+        @session.connect_timeout = 10
+
+        @session.base_url                 = "https://#{host}"
+        @session.headers["Content-Type"]  = "application/json"
+        @session.headers["Accept"]        = "application/json"
+        @session.headers["User-Agent"]    = "Parse for Ruby, 0.0"
+        @session.headers[Protocol::HEADER_APP_ID] = @app_id
+
+        key_type = data[:master] ? Protocol::HEADER_MASTER_KEY : Protocol::HEADER_API_KEY
+        @session.headers[key_type] = @api_key
+      end
+    end
+  end
+
   module Parse
 
     class Engine
 
-      HOST              = "https://api.parse.com"
-      VERSION           = "1"
-      APP_ID_HEADER     = "X-Parse-Application-Id"
-      API_KEY_HEADER    = "X-Parse-REST-API-Key"
-      MASTER_KEY_HEADER = "X-Parse-Master-Key"
-
-      attr_reader :classes, :users, :login, :password_reset, :file_storage
+      attr_reader :client
 
       def initialize(app_id, api_key, master)
-        @app_id         = app_id
-        @api_key        = api_key
-        @master         = master
-        @classes        = build_parse_resource_for "classes"
-        @users          = build_parse_resource_for "users"
-        @login          = build_parse_resource_for "login"
-        @password_reset = build_parse_resource_for "requestPasswordReset"
-        @file_storage   = build_parse_resource_for "files"
+        @client = ::Parse::Client.new app_id: app_id, api_key: api_key, master: master
       end
 
       def read(storage_name, params)
-        parse_resources_for(storage_name).get params: params
+        query = params.inject({}) do |result, (k, v)|
+          result.merge k.to_s => CGI.escape(v.to_s)
+        end
+        client.request uri_for(storage_name), :get, nil, query
       end
 
       def delete(storage_name, id)
-        parse_resources_for(storage_name)[id].delete
+        client.delete uri_for(storage_name, id)
       end
 
       def create(storage_name, attributes)
-        parse_resources_for(storage_name).post body: attributes.to_json
+        client.post uri_for(storage_name), attributes.to_json
       end
 
       def update(storage_name, id, attributes)
-        parse_resources_for(storage_name)[id].put body: attributes.to_json
+        client.put uri_for(storage_name, id), attributes.to_json
       end
 
       def sign_in(username, password)
-        login.get params: {username: username, password: password}
+        client.request ::Parse::Protocol::USER_LOGIN_URI, :get, nil, { username: username, password: password }
       end
 
       def upload_file(filename, content, content_type)
-        storage = file_storage[URI.escape(filename)]
-        storage.options[:headers]["Content-Type"] = content_type
-        storage.post body: content
+        client.post ::Parse::Protocol.file_uri(URI.escape(filename)), content
       end
 
       def request_password_reset(email)
-        password_reset.post params: {email: email}
+        client.post ::Parse::Protocol::PASSWORD_RESET_URI, {email: email}.to_json
       end
 
       private
 
-      def parse_resources_for(storage_name)
-        storage_name == "_User" ? users : classes[storage_name]
-      end
-
-      def build_parse_resource_for(name)
-        Parse::Resource.new(HOST, format: :json, headers: key_headers)[VERSION][name]
-      end
-
-      def key_headers
-        key_type  = @master ? MASTER_KEY_HEADER : API_KEY_HEADER
-        {
-          APP_ID_HEADER => @app_id,
-          key_type => @api_key
-        }
+      def uri_for(storage_name, id = nil)
+        storage_name == "_User" ? ::Parse::Protocol.user_uri(id) : ::Parse::Protocol.class_uri(storage_name, id)
       end
 
     end
