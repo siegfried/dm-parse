@@ -21,7 +21,7 @@ describe DataMapper::Property::ParseFile do
     context "when value is io" do
       let(:value) { StringIO.new "xx" }
       
-      before { value.stub(original_filename: "xx.txt") }
+      before { value.stub(original_filename: "xx.txt", content_type: "plain/text") }
       before { DataMapper::Adapters::ParseAdapter.any_instance.stub(upload_file: {"name" => "x", "url" => "y"}) }
 
       it { should be_has_key("__type") }
