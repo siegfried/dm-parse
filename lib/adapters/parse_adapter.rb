@@ -181,9 +181,12 @@ module DataMapper
       end
 
       def feed_for(parse_query, condition, comparison_class)
-        field       = condition.subject.field
-        comparison  = comparison_class.new condition.value
-        parse_query.add field, comparison
+        if (subject = condition.subject).is_a?(DataMapper::Property)
+          comparison  = comparison_class.new condition.value
+          parse_query.add subject.field, comparison
+        else
+          raise NotImplementedError, "Condition: #{condition}"
+        end
       end
 
       def feed_reversely(parse_query, conditions)
