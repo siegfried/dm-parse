@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "dm-parse"
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Zhi-Qiang Lei"]
-  s.date = "2012-06-29"
+  s.date = "2012-07-02"
   s.description = "An extension to make DataMapper working on Parse.com"
   s.email = "zhiqiang.lei@gmail.com"
   s.extra_rdoc_files = [
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
     "lib/collection.rb",
     "lib/dm-parse.rb",
     "lib/is/parse.rb",
+    "lib/parse/engine.rb",
     "lib/parse/query.rb",
     "lib/parse/resource.rb",
     "lib/property/parse_date.rb",
