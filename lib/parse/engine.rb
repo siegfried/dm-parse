@@ -31,11 +31,11 @@ module DataMapper
       end
 
       def create(storage_name, attributes)
-        parse_resources_for(storage_name).post params: attributes
+        parse_resources_for(storage_name).post body: attributes.to_json
       end
 
       def update(storage_name, id, attributes)
-        parse_resources_for(storage_name)[id].put params: attributes
+        parse_resources_for(storage_name)[id].put body: attributes.to_json
       end
 
       def sign_in(username, password)

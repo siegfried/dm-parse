@@ -3,10 +3,10 @@ require "spec_helper"
 describe "resource" do
   subject { resource }
 
-  let(:resource)  { model.new title: "Test Title", rank: 3, body: "Test Body" }
-  let(:model)     { Article }
+  let(:resource)  { Article.new title: "Test Title", rank: 3, body: "Test Body" }
 
-  before { model.all.destroy }
+  before { Article.all.destroy }
+  before { Comment.all.destroy }
 
   it { should be_new }
   it { should be_dirty }
@@ -22,6 +22,13 @@ describe "resource" do
     its(:id)          { should_not be_nil }
     its(:created_at)  { should_not be_nil }
     its(:updated_at)  { should_not be_nil }
+  end
+
+  context "when resource is a child" do
+    let(:resource)  { Comment.create article: parent }
+    let(:parent)    { Article.create }
+
+    its(:article) { should be(parent) }
   end
 end
 
