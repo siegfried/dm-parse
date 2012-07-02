@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dm-parse"
-  s.version = "0.3.0"
+  s.version = "0.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Zhi-Qiang Lei"]
@@ -28,12 +28,12 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "dm-parse.gemspec",
+    "lib/adapters/parse/engine.rb",
+    "lib/adapters/parse/query.rb",
     "lib/adapters/parse_adapter.rb",
     "lib/collection.rb",
     "lib/dm-parse.rb",
     "lib/is/parse.rb",
-    "lib/parse/engine.rb",
-    "lib/parse/query.rb",
     "lib/property/parse_date.rb",
     "lib/property/parse_file.rb",
     "lib/property/parse_geo_point.rb",
