@@ -78,6 +78,9 @@ By this, you can use `User.authenticate(username, password)` to sign in, and use
 * ParseDate: the date, use it like you use DateTime.
 * ParseFile: the file, give it a hash contain "name" and "url", or a IO object from web form, it will be uploaded.
 
+## Limits
+* Does not support many-to-many relationships.
+
 ## Contributing to dm-parse
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
