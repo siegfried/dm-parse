@@ -1,15 +1,13 @@
+$: << File.join(File.dirname(__FILE__), "parse")
+require "engine"
+require "query"
+
 module DataMapper
   module Adapters
 
     class ParseAdapter < AbstractAdapter
       include Parse::Conditions
       include Query::Conditions
-
-      HOST              = "https://api.parse.com"
-      VERSION           = "1"
-      APP_ID_HEADER     = "X-Parse-Application-Id"
-      API_KEY_HEADER    = "X-Parse-REST-API-Key"
-      MASTER_KEY_HEADER = "X-Parse-Master-Key"
 
       attr_reader :engine
 

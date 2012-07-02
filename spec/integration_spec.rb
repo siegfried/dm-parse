@@ -1,4 +1,7 @@
 require "spec_helper"
+require "uri"
+require "net/http"
+require "net/https"
 
 describe "resource" do
   subject { resource }
@@ -126,6 +129,14 @@ describe "adapter" do
 
     it { should be_has_key("name") }
     it { should be_has_key("url") }
+
+    describe "its content" do
+      subject { Net::HTTP.get URI(url) }
+
+      let(:url) { adapter.upload_file(filename, content, content_type)["url"] }
+
+      it { should eq(content) }
+    end
   end
 
   describe "#request_password_reset" do

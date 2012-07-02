@@ -15,7 +15,7 @@ module DataMapper
         @session.connect_timeout = 10
 
         @session.base_url                 = "https://#{host}"
-        @session.headers["Content-Type"]  = "application/json"
+        @session.headers["Content-Type"]  = data[:content_type] || "application/json"
         @session.headers["Accept"]        = "application/json"
         @session.headers["User-Agent"]    = "Parse for Ruby, 0.0"
         @session.headers[Protocol::HEADER_APP_ID] = @app_id
@@ -33,7 +33,8 @@ module DataMapper
       attr_reader :client
 
       def initialize(app_id, api_key, master)
-        @client = ::Parse::Client.new app_id: app_id, api_key: api_key, master: master
+        @app_id, @api_key, @master = app_id, api_key, master
+        @client = build_client
       end
 
       def read(storage_name, params)
@@ -60,6 +61,7 @@ module DataMapper
       end
 
       def upload_file(filename, content, content_type)
+        client = build_client(content_type: content_type)
         client.post ::Parse::Protocol.file_uri(URI.escape(filename)), content
       end
 
@@ -68,6 +70,10 @@ module DataMapper
       end
 
       private
+
+      def build_client(options = {})
+        ::Parse::Client.new options.merge(app_id: @app_id, api_key: @api_key, master: @master)
+      end
 
       def uri_for(storage_name, id = nil)
         storage_name == "_User" ? ::Parse::Protocol.user_uri(id) : ::Parse::Protocol.class_uri(storage_name, id)
