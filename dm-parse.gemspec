@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dm-parse"
-  s.version = "0.2.2"
+  s.version = "0.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Zhi-Qiang Lei"]
@@ -65,7 +65,6 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<dm-validations>, [">= 1.2"])
       s.add_runtime_dependency(%q<activesupport>, [">= 3.2"])
       s.add_runtime_dependency(%q<nestful>, [">= 0.0.8"])
-      s.add_runtime_dependency(%q<mime-types>, [">= 1.19"])
       s.add_development_dependency(%q<rspec>, [">= 2.10.0"])
       s.add_development_dependency(%q<yard>, [">= 0.7"])
       s.add_development_dependency(%q<rdoc>, [">= 3.12"])
@@ -78,7 +77,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<dm-validations>, [">= 1.2"])
       s.add_dependency(%q<activesupport>, [">= 3.2"])
       s.add_dependency(%q<nestful>, [">= 0.0.8"])
-      s.add_dependency(%q<mime-types>, [">= 1.19"])
       s.add_dependency(%q<rspec>, [">= 2.10.0"])
       s.add_dependency(%q<yard>, [">= 0.7"])
       s.add_dependency(%q<rdoc>, [">= 3.12"])
@@ -92,7 +90,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<dm-validations>, [">= 1.2"])
     s.add_dependency(%q<activesupport>, [">= 3.2"])
     s.add_dependency(%q<nestful>, [">= 0.0.8"])
-    s.add_dependency(%q<mime-types>, [">= 1.19"])
     s.add_dependency(%q<rspec>, [">= 2.10.0"])
     s.add_dependency(%q<yard>, [">= 0.7"])
     s.add_dependency(%q<rdoc>, [">= 3.12"])
