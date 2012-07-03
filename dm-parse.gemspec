@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dm-parse"
-  s.version = "0.3.4"
+  s.version = "0.3.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Zhi-Qiang Lei"]
@@ -39,6 +39,7 @@ Gem::Specification.new do |s|
     "lib/property/parse_geo_point.rb",
     "lib/property/parse_key.rb",
     "lib/property/parse_pointer.rb",
+    "lib/property/text.rb",
     "spec/integration_spec.rb",
     "spec/parse_adapter_spec.rb",
     "spec/parse_date_spec.rb",
