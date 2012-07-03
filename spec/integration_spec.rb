@@ -135,6 +135,12 @@ describe User do
       subject { model.authenticate username, password }
 
       it { should eq(user) }
+
+      context "when adapter raise error" do
+        before { DataMapper::Adapters::ParseAdapter.any_instance.stub(:sign_in).and_raise(Parse::ParseError) }
+
+        it { should be_nil }
+      end
     end
   end
 end

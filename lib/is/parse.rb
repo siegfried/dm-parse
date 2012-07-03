@@ -18,9 +18,23 @@ module DataMapper
         property :email,    Property::String, format: :email_address
 
         class << self
+          # Authenticate a user
+          #
+          # @param [String] username
+          #   username
+          #
+          # @param [String] password
+          #   password
+          #
+          # @return [Resource, nil]
+          #   the user resource, or nil if authentication failed
+          #
+          # @api semipublic
           def authenticate(username, password)
             result = repository.adapter.sign_in(username, password)
             get(result["objectId"])
+          rescue ::Parse::ParseError
+            nil
           end
 
           def request_password_reset(email)
