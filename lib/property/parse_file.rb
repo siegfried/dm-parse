@@ -4,7 +4,12 @@ module DataMapper
     class ParseFile < Object
 
       def dump(value)
-        value && { "__type" => "File", "name" => File.basename(value.path) }
+        case value
+        when ::URI
+          { "__type" => "File", "name" => File.basename(value.path), "url" => value.to_s }
+        when ::Hash
+          value
+        end
       end
 
       def load(value)
@@ -19,6 +24,8 @@ module DataMapper
           content_type  = value.content_type
           response      = adapter.upload_file(filename, content, content_type)
           URI(response["url"])
+        elsif value.is_a?(Hash)
+          URI(value["url"])
         end
       end
 

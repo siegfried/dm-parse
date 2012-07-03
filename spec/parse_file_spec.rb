@@ -31,7 +31,7 @@ describe DataMapper::Property::ParseFile do
 
     let(:value) { URI(url) }
 
-    it { should eq("__type" => "File", "name" => name) }
+    it { should eq("__type" => "File", "name" => name, "url" => value.to_s) }
   end
 
   describe "#load" do

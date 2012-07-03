@@ -35,6 +35,19 @@ describe "resource" do
 
         it { should eq(content) }
       end
+
+      context "when resource is persisted" do
+        let(:resource)        { Article.create attachment: attachment }
+        let(:new_attachment)  { Struct.new(:original_filename, :read, :content_type).new("x.txt", "yy", "plain/txt") }
+
+        before { resource.update(attachment: new_attachment) }
+
+        describe "its file content" do
+          subject { Net::HTTP.get resource.attachment }
+
+          it { should eq("yy") }
+        end
+      end
     end
   end
 
