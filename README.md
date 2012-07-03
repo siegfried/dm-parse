@@ -76,7 +76,7 @@ By this, you can use `User.authenticate(username, password)` to sign in, and use
 * ParseKey: the property for objectId, `is :parse` will define it for you.
 * ParsePointer: the pointer, you just need to give it objectId value.
 * ParseDate: the date, use it like you use DateTime.
-* ParseFile: the file, give it a hash contain "name" and "url", or a IO object from web form, it will be uploaded.
+* ParseFile: the file, give it an IO object from web form, it will be uploaded, and it will be loaded as a URI object.
 
 ## Limits
 * Does not support many-to-many relationships.
