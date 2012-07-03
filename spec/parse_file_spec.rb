@@ -5,12 +5,8 @@ describe DataMapper::Property::ParseFile do
 
   let(:property) { Article.properties[:attachment] }
 
-  describe "#dump" do
-    subject { property.dump value }
-
-    let(:value) { { "name" => "xx.txt", "url" => "http://a.cn/xx.txt" } }
-
-    it { should eq(value.merge("__type" => "File")) }
+  describe "#typecast" do
+    subject { property.typecast value }
 
     context "when value is nil" do
       let(:value) { nil }

@@ -25,6 +25,20 @@ describe "resource" do
     its(:id)          { should_not be_nil }
     its(:created_at)  { should_not be_nil }
     its(:updated_at)  { should_not be_nil }
+
+    context "when resource has attachment" do
+      let(:resource)    { Article.new attachment: attachment }
+      let(:attachment)  { Struct.new(:original_filename, :read, :content_type).new("x.txt", content, "plain/txt") }
+      let(:content)     { "xx" }
+
+      describe "its file content" do
+        subject { Net::HTTP.get URI(url) }
+
+        let(:url) { resource.attachment["url"] }
+
+        it { should eq(content) }
+      end
+    end
   end
 
   context "when resource is a child" do
