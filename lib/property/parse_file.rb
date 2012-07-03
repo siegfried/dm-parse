@@ -4,11 +4,11 @@ module DataMapper
     class ParseFile < Object
 
       def dump(value)
-        value
+        value && { "__type" => "File", "name" => File.basename(value.path) }
       end
 
       def load(value)
-        value
+        value && URI(value["url"])
       end
 
       def typecast(value)
@@ -17,9 +17,8 @@ module DataMapper
           filename      = value.original_filename
           content       = value.read
           content_type  = value.content_type
-          adapter.upload_file(filename, content, content_type).merge("__type" => "File")
-        else
-          value
+          response      = adapter.upload_file(filename, content, content_type)
+          URI(response["url"])
         end
       end
 

@@ -42,4 +42,12 @@ describe DataMapper::Property::ParseDate do
 
     it { should be_true }
   end
+
+  describe "#typecast" do
+    subject { property.typecast value }
+
+    let(:value) { "2011-08-21T18:02:52.249Z" }
+
+    it { should be_a(DateTime) }
+  end
 end

@@ -1,3 +1,4 @@
+require "uri"
 require "dm-core"
 require "dm-validations"
 require "active_support/all"

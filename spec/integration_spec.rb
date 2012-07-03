@@ -1,5 +1,4 @@
 require "spec_helper"
-require "uri"
 require "net/http"
 require "net/https"
 
@@ -32,9 +31,7 @@ describe "resource" do
       let(:content)     { "xx" }
 
       describe "its file content" do
-        subject { Net::HTTP.get URI(url) }
-
-        let(:url) { resource.attachment["url"] }
+        subject { Net::HTTP.get resource.attachment }
 
         it { should eq(content) }
       end

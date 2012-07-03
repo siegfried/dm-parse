@@ -25,7 +25,7 @@ module DataMapper
           result        = engine.create storage_name, params
 
           initialize_serial resource, result["objectId"]
-          resource.created_at = resource.updated_at = result["createdAt"].to_datetime
+          resource.created_at = resource.updated_at = result["createdAt"]
         end.size
       end
 
