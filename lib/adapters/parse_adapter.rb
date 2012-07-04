@@ -163,82 +163,112 @@ module DataMapper
         conditions  = query.conditions
         return nil if conditions.blank?
 
-        case conditions
-        when NotOperation
-          parse_query = Parse::Conditions::And.new
-          feed_reversely(parse_query, conditions)
-        when AndOperation
-          parse_query = Parse::Conditions::And.new
-          feed_directly(parse_query, conditions)
-        when OrOperation
-          parse_query = Parse::Conditions::Or.new
-          feed_or(parse_query, conditions)
-        end
-
-        parse_query.build
+        result = {}
+        translate(conditions, result)
+        finalize result
       end
 
-      def feed_for(parse_query, condition, comparison_class)
+      def translate(condition, result)
+        case condition
+        when RegexpComparison
+          translate_for(result, condition, Regex)
+        when EqualToComparison
+          translate_for(result, condition, Eql)
+        when GreaterThanComparison
+          translate_for(result, condition, Gt)
+        when GreaterThanOrEqualToComparison
+          translate_for(result, condition, Gte)
+        when LessThanComparison
+          translate_for(result, condition, Lt)
+        when LessThanOrEqualToComparison
+          translate_for(result, condition, Lte)
+        when InclusionComparison
+          translate_for(result, condition, In)
+        when NotOperation
+          condition.each { |c| translate_reversely c, result }
+        when AndOperation
+          condition.each { |c| translate c, result }
+        when OrOperation
+          result["$or"] ||= []
+          result["$or"] = result["$or"] + condition.map do |c|
+            r = {}
+            translate c, r
+            r
+          end
+        else
+          raise NotImplementedError
+        end
+      end
+
+      def translate_reversely(condition, result)
+        case condition
+        when EqualToComparison
+          translate_for(result, condition, Ne)
+        when GreaterThanComparison
+          translate_for(result, condition, Lte)
+        when GreaterThanOrEqualToComparison
+          translate_for(result, condition, Lt)
+        when LessThanComparison
+          translate_for(result, condition, Gte)
+        when LessThanOrEqualToComparison
+          translate_for(result, condition, Gt)
+        when InclusionComparison
+          translate_for(result, condition, Nin)
+        when NotOperation
+          condition.each { |c| translate c, result }
+        when AndOperation
+          condition.each { |c| translate_reversely c, result }
+        else
+          raise NotImplementedError
+        end
+      end
+
+      def translate_for(result, condition, comparison_class)
         subject = condition.subject
+
         case subject
         when DataMapper::Property
-          comparison = comparison_class.new condition.value
-          parse_query.add subject.field, comparison
+          field = subject.field
+          result[field] ||= []
+          result[field] << comparison_class.new(condition.value)
         when DataMapper::Associations::OneToMany::Relationship
           child_key = condition.subject.child_key.first
-          parse_query.add "objectId", comparison_class.new(condition.value.map { |resource| resource.send child_key.name })
+          result["objectId"] ||= []
+          result["objectId"] << comparison_class.new(condition.value.map { |resource| resource.send child_key.name })
         when DataMapper::Associations::ManyToOne::Relationship
           child_key = subject.child_key.first
-          parse_query.add child_key.field, comparison_class.new(condition.foreign_key_mapping.value)
+          field     = child_key.field
+          result[field] ||= []
+          result[field] << comparison_class.new(condition.foreign_key_mapping.value)
         else
           raise NotImplementedError, "Condition: #{condition}"
         end
       end
 
-      def feed_reversely(parse_query, conditions)
-        conditions.each do |condition|
-          case condition
-          when EqualToComparison              then feed_for(parse_query, condition, Ne)
-          when GreaterThanComparison          then feed_for(parse_query, condition, Lte)
-          when GreaterThanOrEqualToComparison then feed_for(parse_query, condition, Lt)
-          when LessThanComparison             then feed_for(parse_query, condition, Gte)
-          when LessThanOrEqualToComparison    then feed_for(parse_query, condition, Gt)
-          when NotOperation                   then feed_directly(parse_query, condition)
-          when AndOperation                   then feed_reversely(parse_query, condition)
-          when InclusionComparison            then feed_for(parse_query, condition, Nin)
+      def finalize(queries)
+        queries.inject({}) do |result, (field, comparisons)|
+          if field == "$or"
+            result.merge! field => comparisons.map { |c| finalize c }
           else
-            raise NotImplementedError
+            result.merge! field => combine(comparisons)
           end
         end
       end
 
-      def feed_directly(parse_query, conditions)
-        conditions.each do |condition|
-          feed_with_condition parse_query, condition
-        end
-      end
+      def combine(comparisons)
+        groups = comparisons.group_by { |comparison| comparison.is_a? Eql }
+        equals = groups[true]
+        others = groups[false]
 
-      def feed_or(queries, conditions)
-        conditions.each do |condition|
-          parse_query = Parse::Conditions::And.new
-          feed_with_condition parse_query, condition
-          queries.add parse_query
-        end
-      end
-
-      def feed_with_condition(parse_query, condition)
-        case condition
-        when RegexpComparison               then feed_for(parse_query, condition, Regex)
-        when EqualToComparison              then feed_for(parse_query, condition, Eql)
-        when GreaterThanComparison          then feed_for(parse_query, condition, Gt)
-        when GreaterThanOrEqualToComparison then feed_for(parse_query, condition, Gte)
-        when LessThanComparison             then feed_for(parse_query, condition, Lt)
-        when LessThanOrEqualToComparison    then feed_for(parse_query, condition, Lte)
-        when InclusionComparison            then feed_for(parse_query, condition, In)
-        when NotOperation                   then feed_reversely(parse_query, condition)
-        when AndOperation                   then feed_directly(parse_query, condition)
-        else
-          raise NotImplementedError
+        if equals.present? && others.present?
+          raise "Parse Query: cannot combine Eql with others"
+        elsif equals.present?
+          raise "can only use one EqualToComparison for a field" unless equals.size == 1
+          equals.first.as_json
+        elsif others.present?
+          others.inject({}) do |result, comparison|
+            result.merge! comparison.as_json
+          end
         end
       end
 

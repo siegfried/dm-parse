@@ -61,6 +61,11 @@ describe DataMapper::Adapters::ParseAdapter do
     context "when query has :or operation" do
       let(:query) { (model.all(:rank => 3) + model.all(:rank => 4) + model.all(:rank => 5)).query }
       it { should eq("$or" => [{"rank" => 3}, {"rank" => 4}, {"rank" => 5}]) }
+
+      context "in :and operation" do
+        let(:query) { (model.all(:title => "x") & (model.all(:rank => 3) + model.all(:rank => 4))).query }
+        it { should eq("title" => "x", "$or" => [{"rank" => 3}, {"rank" => 4}]) }
+      end
     end
 
     context "when query has union operator" do

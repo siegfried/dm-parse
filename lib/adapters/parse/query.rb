@@ -7,7 +7,7 @@ module DataMapper
           @value = value
         end
 
-        def build
+        def as_json
           { key_name => @value }
         end
 
@@ -17,7 +17,7 @@ module DataMapper
       end
 
       class Eql < Comparison
-        def build
+        def as_json
           @value
         end
       end
@@ -58,57 +58,8 @@ module DataMapper
           result.join
         end
 
-        def build
-          {key_name => @value.source}.tap { |value| value["$options"] = options if options.present? }
-        end
-      end
-
-      class And
-        def initialize
-          @conditions = Mash.new
-        end
-
-        def add(field, comparison)
-          @conditions[field] ||= []
-          @conditions[field] << comparison
-          self
-        end
-
-        def combine(comparisons)
-          groups = comparisons.group_by { |comparison| comparison.is_a? Eql }
-          equals = groups[true]
-          others = groups[false]
-
-          if equals.present? && others.present?
-            raise "Parse Query: cannot combine Eql with others"
-          elsif equals.present?
-            raise "can only use one EqualToComparison for a field" unless equals.size == 1
-            equals.first.build
-          elsif others.present?
-            others.inject({}) do |result, comparison|
-              result.merge! comparison.build
-            end
-          end
-        end
-
-        def build
-          @conditions.inject({}) do |result, (field, comparisons)|
-            result.merge! field => combine(comparisons)
-          end
-        end
-      end
-
-      class Or
-        def initialize
-          @queries = []
-        end
-
-        def add(query)
-          @queries << query
-        end
-
-        def build
-          {"$or" => @queries.map { |query| query.build } }
+        def as_json
+          { key_name => @value.source }.tap { |value| value["$options"] = options if options.present? }
         end
       end
 
