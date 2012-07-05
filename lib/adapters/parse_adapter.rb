@@ -40,6 +40,8 @@ module DataMapper
         log :error, "Unsupported Query:"
         log :error, "  Model: #{model}"
         log :error, "  Conditions: #{query.conditions}"
+
+        raise NotImplementedError
       end
 
       # Read the "count" from Parse

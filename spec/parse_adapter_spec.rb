@@ -197,13 +197,4 @@ describe DataMapper::Adapters::ParseAdapter do
     end
   end # #parse_params_for
 
-  describe "#read" do
-    let(:query) { model.all.query }
-
-    it "should log error" do
-      DataMapper.logger.should_receive(:error).with(an_instance_of(String)).exactly(3).times
-      adapter.stub(:parse_params_for) { raise NotImplementedError  }
-      adapter.read query
-    end
-  end
 end
