@@ -20,7 +20,13 @@ describe DataMapper::Adapters::ParseAdapter do
 
     context "when query assigns some exact values" do
       let(:query) { model.all(:id => "z", :title => "x", :body => "y").query }
+
       it { should eq("objectId" => "z", "title" => "x", "body" => "y") }
+
+      it "should log translation info" do
+        DataMapper.logger.should_receive(:info).with(an_instance_of(String)).exactly(3).times
+        adapter.send :parse_conditions_for, query
+      end
     end
 
     [:gt, :gte, :lt, :lte].each do |slug|
@@ -167,6 +173,7 @@ describe DataMapper::Adapters::ParseAdapter do
   describe "#parse_params_for" do
     subject { adapter.send :parse_params_for, query }
     let(:query) { model.all.query }
+
     it { should eq(:limit => 1000) }
 
     context "when limit is given" do
@@ -190,4 +197,13 @@ describe DataMapper::Adapters::ParseAdapter do
     end
   end # #parse_params_for
 
+  describe "#read" do
+    let(:query) { model.all.query }
+
+    it "should log error" do
+      DataMapper.logger.should_receive(:error).with(an_instance_of(String)).exactly(3).times
+      adapter.stub(:parse_params_for) { raise NotImplementedError  }
+      adapter.read query
+    end
+  end
 end

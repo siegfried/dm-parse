@@ -36,6 +36,10 @@ module DataMapper
         response      = engine.read storage_name, params
 
         response["results"]
+      rescue NotImplementedError
+        log :error, "Unsupported Query:"
+        log :error, "  Model: #{model}"
+        log :error, "  Conditions: #{query.conditions}"
       end
 
       # Read the "count" from Parse
@@ -165,7 +169,13 @@ module DataMapper
 
         result = {}
         translate(conditions, result)
-        finalize result
+        result_for_parse = finalize result
+
+        log :info, "Translating query on #{query.model}:"
+        log :info, "  from: #{query.conditions}"
+        log :info, "  to: #{result_for_parse.to_json}"
+
+        result_for_parse
       end
 
       def translate(condition, result)
@@ -270,6 +280,10 @@ module DataMapper
             result.merge! comparison.as_json
           end
         end
+      end
+
+      def log(level, message)
+        DataMapper.logger.send level, "[dm-parse][#{level}] #{message}"
       end
 
     end
