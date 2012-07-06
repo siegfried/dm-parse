@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "dm-parse"
-  s.version = "0.3.9"
+  s.version = "0.3.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Zhi-Qiang Lei"]
-  s.date = "2012-07-05"
+  s.date = "2012-07-06"
   s.description = "An extension to make DataMapper working on Parse.com"
   s.email = "zhiqiang.lei@gmail.com"
   s.extra_rdoc_files = [
@@ -71,6 +71,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<jeweler>, [">= 1.8.3"])
       s.add_development_dependency(%q<simplecov>, [">= 0.6"])
       s.add_development_dependency(%q<debugger>, [">= 1.1"])
+      s.add_development_dependency(%q<pry>, [">= 0.9"])
     else
       s.add_dependency(%q<dm-core>, [">= 1.2"])
       s.add_dependency(%q<dm-validations>, [">= 1.2"])
@@ -83,6 +84,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<jeweler>, [">= 1.8.3"])
       s.add_dependency(%q<simplecov>, [">= 0.6"])
       s.add_dependency(%q<debugger>, [">= 1.1"])
+      s.add_dependency(%q<pry>, [">= 0.9"])
     end
   else
     s.add_dependency(%q<dm-core>, [">= 1.2"])
@@ -96,6 +98,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<jeweler>, [">= 1.8.3"])
     s.add_dependency(%q<simplecov>, [">= 0.6"])
     s.add_dependency(%q<debugger>, [">= 1.1"])
+    s.add_dependency(%q<pry>, [">= 0.9"])
   end
 end
 
