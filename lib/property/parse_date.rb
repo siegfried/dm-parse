@@ -4,15 +4,27 @@ module DataMapper
     class ParseDate < Object
 
       def dump(value)
-        value && {"__type" => "Date", "iso" => value.utc.iso8601(3)}
+        case value
+        when ::DateTime
+          {"__type" => "Date", "iso" => value.utc.iso8601(3)}
+        when ::Hash
+          value
+        end
       end
 
       def load(value)
-        value && (value.is_a?(Hash) ? value["iso"].to_datetime : value.to_datetime)
+        typecast(value)
       end
 
       def typecast(value)
-        value && value.to_datetime
+        case value
+        when ::Hash
+          value["iso"].to_datetime
+        when ::NilClass
+          value
+        else
+          value.to_datetime
+        end
       end
 
     end

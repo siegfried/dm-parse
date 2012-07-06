@@ -13,6 +13,7 @@ group :development do
   gem "jeweler", ">= 1.8.3"
   gem "simplecov", ">= 0.6"
   gem "debugger", ">= 1.1"
+  gem "pry", ">= 0.9"
 end
 
 gem "dm-core", ">= 1.2"
