@@ -48,8 +48,20 @@ describe DataMapper::Property::ParseGeoPoint do
       it { should be_false }
     end
 
+    context "when lat is empty string" do
+      let(:lat) { "" }
+
+      it { should be_false }
+    end
+
     context "when lng is nil" do
       let(:lng) { nil }
+
+      it { should be_false }
+    end
+
+    context "when lng is empty string" do
+      let(:lng) { "" }
 
       it { should be_false }
     end
@@ -58,6 +70,40 @@ describe DataMapper::Property::ParseGeoPoint do
       let(:value) { nil }
 
       it { should be_true }
+    end
+  end
+
+  describe "#typecast" do
+    subject { property.typecast value }
+
+    let(:value) { { "lat" => lat, "lng" => lng } }
+    let(:lat)   { "20.0" }
+    let(:lng)   { "50.0" }
+
+    it { should eq(value) }
+
+    context "when lat is nil" do
+      let(:lat) { nil }
+
+      it { should be_blank }
+    end
+
+    context "when lat is empty string" do
+      let(:lat) { "" }
+
+      it { should be_blank }
+    end
+
+    context "when lng is nil" do
+      let(:lng) { nil }
+
+      it { should be_blank }
+    end
+
+    context "when lng is empty string" do
+      let(:lng) { "" }
+
+      it { should be_blank }
     end
   end
 end

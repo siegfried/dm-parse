@@ -11,8 +11,17 @@ module DataMapper
         value && {"lat" => value["latitude"], "lng" => value["longitude"]}
       end
 
+      def typecast(value)
+        case value
+        when ::Hash
+          lat = value["lat"]
+          lng = value["lng"]
+          { "lat" => lat, "lng" => lng } if lat.present? && lng.present?
+        end
+      end
+
       def valid?(value)
-        return false if value && (value["lat"].nil? || value["lng"].nil?)
+        return false if value && (value["lat"].blank? || value["lng"].blank?)
         super
       end
     end

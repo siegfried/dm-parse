@@ -56,5 +56,13 @@ class Comment
   belongs_to :article
 end
 
+class Company
+  include DataMapper::Resource
+
+  is :parse
+
+  property :location, ParseGeoPoint, required: true
+end
+
 DataMapper.finalize
 

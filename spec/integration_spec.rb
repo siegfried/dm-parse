@@ -145,6 +145,21 @@ describe User do
   end
 end
 
+describe Company do
+  subject { described_class.new attributes }
+
+  let(:attributes)  { { location: location } }
+  let(:location)    { { "lat" => "5.0", "lng" => "0.0" } }
+
+  it { should be_valid }
+
+  context "when location is invalid" do
+    let(:location) { { "lat" => "", "lng" => "" } }
+
+    it { should_not be_valid }
+  end
+end
+
 describe "adapter" do
   subject { adapter }
 
