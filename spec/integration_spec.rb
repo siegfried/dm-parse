@@ -124,6 +124,12 @@ describe User do
     it { should_not be_valid }
   end
 
+  context "when an username is taken" do
+    before { model.create username: username, password: password, email: "#{username}@abc.com" }
+
+    it { should_not be_valid }
+  end
+
   describe "class" do
     subject { model }
 

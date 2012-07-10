@@ -13,7 +13,7 @@ module DataMapper
 
         storage_names[:default] = "_User"
 
-        property :username, Property::String
+        property :username, Property::String, unique: true
         property :password, Property::String
         property :email,    Property::String, format: :email_address
 
