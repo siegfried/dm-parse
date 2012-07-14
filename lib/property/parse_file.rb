@@ -24,8 +24,10 @@ module DataMapper
           content_type  = value.content_type
           response      = adapter.upload_file(filename, content, content_type)
           URI(response["url"])
-        elsif value.is_a?(Hash)
+        elsif value.is_a?(::Hash)
           URI(value["url"])
+        elsif value.is_a?(::String)
+          URI(value)
         end
       end
 

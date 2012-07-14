@@ -24,6 +24,12 @@ describe DataMapper::Property::ParseFile do
 
       it { should eq(URI(url)) }
     end
+
+    context "when value is string" do
+      let(:value) { url }
+
+      it { should eq(URI(url)) }
+    end
   end
 
   describe "#dump" do
