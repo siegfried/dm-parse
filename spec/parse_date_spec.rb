@@ -16,6 +16,12 @@ describe DataMapper::Property::ParseDate do
 
       it { should be_nil }
     end
+
+    context "when value is Date" do
+      let(:value) { Date.parse "2011-08-21" }
+
+      it { should eq("__type" => "Date", "iso" => value.to_datetime.utc.iso8601(3)) }
+    end
   end
 
   describe "#load" do

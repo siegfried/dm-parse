@@ -31,8 +31,16 @@ describe DataMapper::Adapters::ParseAdapter do
 
     [:gt, :gte, :lt, :lte].each do |slug|
       context "when query has #{slug} comparison" do
-        let(:query) { model.all(:id => "z", :rank.send(slug) => 5).query }
-        it { should eq("objectId" => "z", "rank" => {"$#{slug}" => 5}) }
+        let(:closed_at) { DateTime.parse("2011-08-21T18:02:52.249Z") }
+        let(:query) { model.all(:id => "z", :closed_at.send(slug) => closed_at).query }
+
+        it { should eq("objectId" => "z", "closedAt" => {"$#{slug}" => {"__type" => "Date", "iso" => closed_at.utc.iso8601(3)}}) }
+
+        context "when closed_at is a Date" do
+          let(:closed_at) { Date.parse "2011-08-21" }
+
+          it { should eq("objectId" => "z", "closedAt" => {"$#{slug}" => {"__type" => "Date", "iso" => closed_at.to_datetime.utc.iso8601(3)}}) }
+        end
       end
     end
 

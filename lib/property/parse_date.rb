@@ -5,6 +5,8 @@ module DataMapper
 
       def dump(value)
         case value
+        when ::Date
+          {"__type" => "Date", "iso" => value.to_datetime.utc.iso8601(3)}
         when ::DateTime
           {"__type" => "Date", "iso" => value.utc.iso8601(3)}
         when ::Hash

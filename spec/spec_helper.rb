@@ -40,7 +40,7 @@ class Article
   property :title,      String
   property :body,       Text
   property :rank,       Integer
-  property :closed_at,  ParseDate
+  property :closed_at,  ParseDate, field: "closedAt"
   property :attachment, ParseFile
 
   has n, :comments
