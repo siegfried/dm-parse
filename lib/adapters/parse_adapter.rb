@@ -207,6 +207,7 @@ module DataMapper
             translate c, r
             r
           end
+        when ["0 = 1"] # workaround for cancan
         else
           raise NotImplementedError
         end
@@ -272,9 +273,10 @@ module DataMapper
         equals = groups[true]
         others = groups[false]
 
-        if equals.present? && others.present?
-          raise "Parse Query: cannot combine Eql with others"
-        elsif equals.present?
+        # It's such a pity that js query cannot combine equal comparison
+        # with other comparisons, but DataMapper will construct query
+        # in that way.
+        if equals.present?
           raise "can only use one EqualToComparison for a field" unless equals.size == 1
           equals.first.as_json
         elsif others.present?

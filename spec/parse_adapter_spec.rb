@@ -102,17 +102,22 @@ describe DataMapper::Adapters::ParseAdapter do
       end
     end
 
+    context "when query has :eql and others of one field" do
+      let(:query) { model.all(:rank => 5, :rank.gt => 3).query }
+      it { should eq("rank" => 5) }
+    end
+
+    context "when query has [\"0 = 1\"]" do
+      let(:query) { model.all(conditions: ["0 = 1"]).query }
+      it { should eq({}) }
+    end
+
     describe "exceptions" do
       subject { -> { adapter.send :parse_conditions_for, query } }
 
       context "when the key is same" do
         let(:query) { (model.all("rank" => 5) & model.all("rank" => 3)).query }
         it { should raise_error("can only use one EqualToComparison for a field") }
-      end
-
-      context "when query has :eql and others of one field" do
-        let(:query) { model.all(:rank => 5, :rank.gt => 3).query }
-        it { should raise_error }
       end
     end # exceptions
   end # #parse_conditions_for
