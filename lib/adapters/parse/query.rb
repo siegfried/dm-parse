@@ -39,7 +39,7 @@ module DataMapper
 
       class InComparison < Comparison
         def initialize(value)
-          @value = value.to_a
+          @value = value.is_a?(Hash) ? [value] : value.to_a
         end
       end
 
