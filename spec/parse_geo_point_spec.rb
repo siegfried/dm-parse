@@ -8,9 +8,9 @@ describe DataMapper::Property::ParseGeoPoint do
   describe "#dump" do
     subject { property.dump value }
 
-    let(:value) { { "lat" => "20", "lng" => "50" } }
+    let(:value) { { "latitude" => 20.0, "longitude" => 50.0 } }
 
-    it { should eq("__type" => "GeoPoint", "latitude" => value["lat"].to_f, "longitude" => value["lng"].to_f) }
+    it { should eq("__type" => "GeoPoint", "latitude" => 20.0, "longitude" => 50.0) }
 
     context "when value is nil" do
       let(:value) { nil }
@@ -24,7 +24,7 @@ describe DataMapper::Property::ParseGeoPoint do
 
     let(:value) { { "__type" => "GeoPoint", "latitude" => 20.0, "longitude" => 50.0 } }
 
-    it { should eq("lat" => value["latitude"], "lng" => value["longitude"]) }
+    it { should eq(value) }
 
     context "when value is nil" do
       let(:value) { nil }
@@ -36,31 +36,31 @@ describe DataMapper::Property::ParseGeoPoint do
   describe "#valid?" do
     subject { property.valid? value }
 
-    let(:value) { { "lat" => lat, "lng" => lng } }
+    let(:value) { { "latitude" => lat, "longitude" => lng } }
     let(:lat)   { "20.0" }
     let(:lng)   { "50.0" }
 
     it { should be_true }
 
-    context "when lat is nil" do
+    context "when latitude is nil" do
       let(:lat) { nil }
 
       it { should be_false }
     end
 
-    context "when lat is empty string" do
+    context "when latitude is empty string" do
       let(:lat) { "" }
 
       it { should be_false }
     end
 
-    context "when lng is nil" do
+    context "when longitude is nil" do
       let(:lng) { nil }
 
       it { should be_false }
     end
 
-    context "when lng is empty string" do
+    context "when longitude is empty string" do
       let(:lng) { "" }
 
       it { should be_false }
@@ -76,31 +76,31 @@ describe DataMapper::Property::ParseGeoPoint do
   describe "#typecast" do
     subject { property.typecast value }
 
-    let(:value) { { "lat" => lat, "lng" => lng } }
+    let(:value) { { "latitude" => lat, "longitude" => lng } }
     let(:lat)   { "20.0" }
     let(:lng)   { "50.0" }
 
-    it { should eq(value) }
+    it { should eq("latitude" => lat.to_f, "longitude" => lng.to_f) }
 
-    context "when lat is nil" do
+    context "when latitude is nil" do
       let(:lat) { nil }
 
       it { should be_blank }
     end
 
-    context "when lat is empty string" do
+    context "when latitude is empty string" do
       let(:lat) { "" }
 
       it { should be_blank }
     end
 
-    context "when lng is nil" do
+    context "when longitude is nil" do
       let(:lng) { nil }
 
       it { should be_blank }
     end
 
-    context "when lng is empty string" do
+    context "when longitude is empty string" do
       let(:lng) { "" }
 
       it { should be_blank }
