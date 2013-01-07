@@ -19,7 +19,10 @@ module DataMapper
 
       def create(resources)
         resources.each do |resource|
-          params        = attributes_as_fields(resource.attributes(:property)).except("objectId", "createdAt", "updatedAt")
+          # use resource.dirty_attributes,
+          # or else new resource with CarrierWave uploader
+          # cannot be created.
+          params        = resource.dirty_attributes.inject({}) { |result, (property, value)| result.merge!(property.field => value) }.except("objectId", "createdAt", "updatedAt")
           model         = resource.model
           storage_name  = model.storage_name
           result        = engine.create storage_name, params
